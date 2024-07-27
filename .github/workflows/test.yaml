@@ -12,5 +12,26 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
-      - name: Run tests
-        run: make test
+          cache: false
+      - id: cache-path
+        run: |
+          echo "mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
+          echo "build=$(go env GOCACHE)" >> $GITHUB_OUTPUT
+      # - uses: actions/cache/restore@v3
+      #   with:
+      #     path: ${{ steps.cache-path.outputs.mod }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+      #       ${{ runner.os }}-go-
+      - name: Print job and workflow information
+        run: |
+          echo "Workflow ID: ${{ github.workflow }}"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Run Number: ${{ github.run_number }}"
+          echo "Job ID: ${{ github.job }}"
+
+      # - uses: actions/cache/restore@v3
+      #   with:
+      #     path: ${{ steps.cache-path.outputs.build }}
+      # - name: Run tests
+      #   run: make test
