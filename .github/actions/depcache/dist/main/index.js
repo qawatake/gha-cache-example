@@ -68166,6 +68166,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.restoreCache = void 0;
+// some modifications were made to https://github.com/actions/setup-go/tree/v5.0.2/src
 const cache = __importStar(__nccwpck_require__(7799));
 const core = __importStar(__nccwpck_require__(2186));
 const glob = __importStar(__nccwpck_require__(8090));
@@ -68195,69 +68196,6 @@ exports.restoreCache = restoreCache;
 
 /***/ }),
 
-/***/ 4553:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.cachePackages = void 0;
-const core = __importStar(__nccwpck_require__(2186));
-const cache = __importStar(__nccwpck_require__(7799));
-const constants_1 = __nccwpck_require__(581);
-const cachePackages = async (cachePath) => {
-    const state = core.getState(constants_1.State.CacheMatchedKey);
-    const primaryKey = core.getState(constants_1.State.CachePrimaryKey);
-    if (!primaryKey) {
-        core.info('Primary key was not generated. Please check the log messages above for more errors or information');
-        return;
-    }
-    if (!core.getBooleanInput('save-if')) {
-        core.info('`save-if` is false, not saving cache.');
-        return;
-    }
-    if (primaryKey === state) {
-        core.info(`Cache hit occurred on the primary key ${primaryKey}, not saving cache.`);
-        return;
-    }
-    const cacheId = await cache.saveCache([cachePath], primaryKey);
-    if (cacheId === -1) {
-        return;
-    }
-    core.info(`Cache saved with the key: ${primaryKey}`);
-};
-exports.cachePackages = cachePackages;
-function logWarning(message) {
-    const warningPrefix = '[warning]';
-    core.info(`${warningPrefix}${message}`);
-}
-
-
-/***/ }),
-
 /***/ 581:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -68265,6 +68203,7 @@ function logWarning(message) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Outputs = exports.State = void 0;
+// copied from https://github.com/actions/setup-go/tree/v5.0.2/src
 var State;
 (function (State) {
     State["CachePrimaryKey"] = "CACHE_KEY";
@@ -68307,12 +68246,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.run = run;
-exports.postRun = postRun;
+// some modifications were made to https://github.com/actions/setup-go/tree/v5.0.2/src
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const cache_restore_1 = __nccwpck_require__(9517);
-const cache_save_1 = __nccwpck_require__(4553);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -68328,27 +68265,7 @@ async function run() {
             core.setFailed(error.message);
     }
 }
-// Added early exit to resolve issue with slow post action step:
-// - https://github.com/actions/setup-node/issues/878
-// https://github.com/actions/cache/pull/1217
-async function postRun(earlyExit) {
-    try {
-        await (0, cache_save_1.cachePackages)(core.getInput('path'));
-        if (earlyExit) {
-            process.exit(0);
-        }
-    }
-    catch (error) {
-        let message = 'Unknown error!';
-        if (error instanceof Error) {
-            message = error.message;
-        }
-        if (typeof error === 'string') {
-            message = error;
-        }
-        core.warning(message);
-    }
-}
+run();
 
 
 /***/ }),
@@ -79306,23 +79223,13 @@ module.exports = parseParams
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-var exports = __webpack_exports__;
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-/**
- * The entrypoint for the action.
- */
-const main_1 = __nccwpck_require__(399);
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
-(0, main_1.run)();
-
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(399);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map

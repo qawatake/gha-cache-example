@@ -1,3 +1,4 @@
+// // some modifications were made to https://github.com/actions/setup-go/tree/v5.0.2/src
 import * as core from '@actions/core'
 import * as cache from '@actions/cache'
 import { State } from './constants'
@@ -30,9 +31,4 @@ export const cachePackages = async (cachePath: string) => {
     return
   }
   core.info(`Cache saved with the key: ${primaryKey}`)
-}
-
-function logWarning(message: string): void {
-  const warningPrefix = '[warning]'
-  core.info(`${warningPrefix}${message}`)
 }

@@ -1,3 +1,4 @@
+// some modifications were made to https://github.com/actions/setup-go/tree/v5.0.2/src
 import * as cache from '@actions/cache'
 import * as core from '@actions/core'
 import * as glob from '@actions/glob'

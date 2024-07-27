@@ -1,13 +1,13 @@
+// some modifications were made to https://github.com/actions/setup-go/tree/v5.0.2/src
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { restoreCache } from './cache-restore'
-import { cachePackages } from './cache-save'
 
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-export async function run(): Promise<void> {
+async function run(): Promise<void> {
   try {
     restoreCache(
       github.context.workflow,
@@ -22,24 +22,4 @@ export async function run(): Promise<void> {
   }
 }
 
-// Added early exit to resolve issue with slow post action step:
-// - https://github.com/actions/setup-node/issues/878
-// https://github.com/actions/cache/pull/1217
-export async function postRun(earlyExit?: boolean) {
-  try {
-    await cachePackages(core.getInput('path'))
-
-    if (earlyExit) {
-      process.exit(0)
-    }
-  } catch (error) {
-    let message = 'Unknown error!'
-    if (error instanceof Error) {
-      message = error.message
-    }
-    if (typeof error === 'string') {
-      message = error
-    }
-    core.warning(message)
-  }
-}
+run()
