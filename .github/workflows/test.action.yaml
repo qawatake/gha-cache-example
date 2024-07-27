@@ -1,0 +1,30 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+name: test.action
+permissions:
+  contents: read
+  actions: write # require to delete cache
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+      - uses: ./.github/actions/depcache
+        with:
+          dependency-path: go.mod
+          path: ~/go/pkg/mod
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - uses: ./.github/actions/runcache
+        with:
+          path: ~/.cache/go-build
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run tests
+        run: make test
