@@ -28,7 +28,7 @@
 - mainへのpushだけcache saveする理由
   - PRやfeature branchでsaveしたcacheは他から利用できないので無駄。
   - default branchでcacheしないと各PRは都度cacheを作り直すことになる。
-- cache keyを細かく使い分けている理由
+- cache keyをmodとbuildで使い分けている理由
   - modとbuildはcacheの理想的な更新頻度が違うので別々にする。
     - mod: go.modが変わったらcacheを作り直す
       - cache key (mod) について
@@ -46,11 +46,11 @@
   - 削除しちゃったほうがcacheの容量の節約にもなるし、分かりやすさも増す気がする。
   - cache keyに2, 3のバリエーションを用意して、restore-keysで対応すれば必ずしも削除しなくていい。
   - [GitHub Actions overwrite cache example repo](https://github.com/azu/github-actions-overwrite-cache-example)
-- cache/saveにalwaysをつける理由
+- modのcache/saveにalwaysをつける理由
   - [Always save cache](https://github.com/actions/setup-go/blob/0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32/src/package-managers.ts#L13)
   - 失敗してもcacheは保存したいのでalwaysをつける。
   - ただ、CI通ったあとのmainでしかcache saveしないので別にalwaysをつけなくてもいいかもしれない。
-  - modのcacheはそれでいいが、buildのcacheは既存のものをそのまま使ったほうがいいかもしれない。
+  - buildのcacheはdeleteも走ってしまうので、alwaysではなくsuccessを条件にしている。
 
 ## References
 
