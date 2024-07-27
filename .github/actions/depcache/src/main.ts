@@ -1,5 +1,7 @@
-import * as core from '@actions/core'
+import * as core from '@actions/core';
+import * as github from '@actions/github';
 import { wait } from './wait'
+import { restoreCache } from './cache-restore'
 
 /**
  * The main function for the action.
@@ -7,7 +9,12 @@ import { wait } from './wait'
  */
 export async function run(): Promise<void> {
   try {
-    const modCacheKey
+    restoreCache(
+      github.context.workflow,
+      github.context.job,
+      'go.dum',
+      '~/go/pkg/mod'
+    )
     const ms: string = core.getInput('milliseconds')
 
     // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
