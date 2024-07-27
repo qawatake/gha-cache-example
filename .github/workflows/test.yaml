@@ -17,12 +17,17 @@ jobs:
         run: |
           echo "mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
           echo "build=$(go env GOCACHE)" >> $GITHUB_OUTPUT
-      # - uses: actions/cache/restore@v3
-      #   with:
-      #     path: ${{ steps.cache-path.outputs.mod }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-      #       ${{ runner.os }}-go-
+      - uses: actions/cache/restore@v3
+        id: cache-restore-mod
+        with:
+          path: ${{ steps.cache-path.outputs.mod }}
+          key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-mod-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-mod-
+      - uses: actions/cache/restore@v3
+        with:
+          path: ${{ steps.cache-path.outputs.build }}
+          key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-build
       - name: Print job and workflow information
         run: |
           echo "Workflow ID: ${{ github.workflow }}"
@@ -33,5 +38,15 @@ jobs:
       # - uses: actions/cache/restore@v3
       #   with:
       #     path: ${{ steps.cache-path.outputs.build }}
-      # - name: Run tests
-      #   run: make test
+      - name: Run tests
+        run: make test
+      - uses: actions/cache/save@v3
+        if: github.ref == 'refs/heads/main' && steps.cache-restore-mod.outputs.cache-hit != 'true'
+        with:
+          key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-mod-${{ hashFiles('**/go.sum') }}
+          path: ${{ steps.cache-path.outputs.mod }}
+      - uses: actions/cache/save@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-build
+          path: ${{ steps.cache-path.outputs.build }}
