@@ -24,15 +24,15 @@ export const cachePackages = async (cachePath: string) => {
     core.info(
       `Cache hit occurred on the primary key ${primaryKey}, deleting cache.`
     )
-    //delete cache
-    // await cache.
-    const x = await github.getOctokit('').rest.actions.deleteActionsCacheByKey({
-      key: primaryKey,
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo
-    })
-    console.log(x.status)
-    core.info(`${x.data.total_count}`)
+    const res = await github
+      .getOctokit(core.getInput('github-token'))
+      .rest.actions.deleteActionsCacheByKey({
+        key: primaryKey,
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo
+      })
+    console.log(res.status)
+    core.info(`${res.data.total_count}`)
   }
 
   const cacheId = await cache.saveCache([cachePath], primaryKey)

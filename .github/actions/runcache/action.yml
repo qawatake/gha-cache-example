@@ -14,7 +14,10 @@ inputs:
     required: true
   save-if:
     description: |
-      Save cache if `save-if` is true
+      Save cache if `save-if` is true.
+    required: true
+  github-token:
+    description: 'Used to delete cache'
     required: true
 
 # Define your outputs here.
