@@ -4,6 +4,9 @@ on:
       - main
   pull_request:
 name: test
+permissions:
+  contents: read
+  actions: write # require to delete cache
 jobs:
   test:
     runs-on: ubuntu-latest
