@@ -38,6 +38,7 @@ export async function run(): Promise<void> {
 // - https://github.com/actions/setup-node/issues/878
 // https://github.com/actions/cache/pull/1217
 export async function postRun(earlyExit?: boolean) {
+  core.debug('😈')
   try {
     // const cacheInput = core.getBooleanInput('cache')
     // if (cacheInput) {

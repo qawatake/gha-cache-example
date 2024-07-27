@@ -68359,14 +68359,15 @@ async function run() {
 // - https://github.com/actions/setup-node/issues/878
 // https://github.com/actions/cache/pull/1217
 async function postRun(earlyExit) {
+    core.debug('😈');
     try {
-        const cacheInput = core.getBooleanInput('cache');
-        if (cacheInput) {
-            await (0, cache_save_1.cachePackages)(core.getInput('path'));
-            if (earlyExit) {
-                process.exit(0);
-            }
+        // const cacheInput = core.getBooleanInput('cache')
+        // if (cacheInput) {
+        await (0, cache_save_1.cachePackages)(core.getInput('path'));
+        if (earlyExit) {
+            process.exit(0);
         }
+        // }
     }
     catch (error) {
         let message = 'Unknown error!';
