@@ -65810,6 +65810,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.cachePackages = void 0;
 // // some modifications were made to https://github.com/actions/setup-go/tree/v5.0.2/src
@@ -65817,6 +65820,7 @@ const core = __importStar(__nccwpck_require__(2186));
 const cache = __importStar(__nccwpck_require__(7799));
 const github = __importStar(__nccwpck_require__(5438));
 const constants_1 = __nccwpck_require__(581);
+const crypto_1 = __importDefault(__nccwpck_require__(6113));
 const cachePackages = async (cachePath) => {
     const state = core.getState(constants_1.State.CacheMatchedKey);
     const primaryKey = core.getState(constants_1.State.CachePrimaryKey);
@@ -65828,6 +65832,9 @@ const cachePackages = async (cachePath) => {
         core.info('skip saving cache.');
         return;
     }
+    console.log(crypto_1.default.createHash('sha256').update('string').digest('hex'));
+    console.log(crypto_1.default.createHash('md5').update(cachePath).digest());
+    console.log(crypto_1.default.createHash('md5').update(cachePath).digest('hex'));
     if (primaryKey === state) {
         core.info(`Cache hit occurred on the primary key ${primaryKey}, deleting cache.`);
         await github
