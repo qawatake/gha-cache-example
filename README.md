@@ -1,5 +1,30 @@
 # Go GHA Cache Example
 
+## 概要
+
+- .github/workflows/test.yaml, .github/workflows/lint.yaml: [検討](#検討)を既存のactionsで実装した例
+- .github/workflows/test.action.yaml, .github/workflows/lint.action.yaml: [検討](#検討)を自作のactionsで実装した例
+- .github/workflows/lint.composite.yaml: 自作のactionsをさらにcomposite actionとしてまとめてgo setupをいい感じにラップした例
+
+## 自作のactions
+
+[検討](#検討)を踏まえて自作のcache用actionsを作成した。
+
+- depcache: ライブラリの依存関係をキャッシュすることに特化したactions
+  - 毎回restoreは行う。
+  - cache saveはcache hitしなかった && `skip-cache-save`がfalseのときのみ行う。
+  - cache keyにはdependency pathを使う。
+  - cache keyにはgithub.workflowとgithub.jobを使うため、名前が被ったりしなければ他のworkflowとcacheを共有しない。
+- runcache: ビルドやテストの結果をキャッシュすることに特化したactions
+  - 毎回restoreは行う。
+  - cache saveは`skip-cache-save`がfalseのときのみ行う。
+  - cache keyにはgithub.workflowとgithub.jobを使うため、名前が被ったりしなければ他のworkflowとcacheを共有しない。
+  - cache hitした場合には既存のcacheを削除して作り直す。
+
+なぜか標準の`cache/save`を使うよりもcacheの保存が早いというメリットもある。。
+
+## 検討
+
 - mainへのpushだけcache saveする理由
   - PRやfeature branchでsaveしたcacheは他から利用できないので無駄。
   - default branchでcacheしないと各PRは都度cacheを作り直すことになる。
