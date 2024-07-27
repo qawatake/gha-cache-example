@@ -1,0 +1,51 @@
+name: 'gocache'
+description: 'setup and save cache for go'
+inputs:
+  go-version-file:
+    description: 'Path to the go.mod or go.work file.'
+  cache-dependency-path:
+    description: 'Used to specify the path to a dependency file'
+  cache-save:
+    description: 'Used to specify whether to save the cache'
+    required: true
+  github-token:
+    description: 'Used to delete cache'
+    required: true
+  enable-golangci-lint-cache:
+    description: 'Used to specify whether to enable golangci-lint cache'
+    default: 'true'
+outputs:
+  golangci-lint-cache-path:
+    description: 'The path to the golangci-lint cache'
+    value: ${{ steps.cache-path.outputs.golangci-lint }}
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-go@v5
+      with:
+        go-version-file: ${{ inputs.go-version-file }}
+        cache: false
+    - id: cache-path
+      shell: bash
+      run: |
+          echo "mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
+          echo "build=$(go env GOCACHE)" >> $GITHUB_OUTPUT
+          echo "golangci-lint=${HOME}/.cache/golangci-lint" >> $GITHUB_OUTPUT
+    - uses: ./.github/actions/depcache
+      with:
+        dependency-path: ${{ inputs.cache-dependency-path }}
+        path: ${{ steps.cache-path.outputs.mod }}
+        skip-cache-save: ${{ !inputs.cache-save }}
+    - uses: ./.github/actions/runcache
+      with:
+        path: ${{ steps.cache-path.outputs.build }}
+        name: gocache-go-build
+        skip-cache-save: ${{ !inputs.cache-save }}
+        github-token: ${{ inputs.github-token }}
+    - uses: ./.github/actions/runcache
+      if : ${{ inputs.enable-golangci-lint-cache }}
+      with:
+        path: ${{ steps.cache-path.outputs.golangci-lint }}
+        name: gocache-golangci-lint
+        skip-cache-save: ${{ !inputs.cache-save }}
+        github-token: ${{ inputs.github-token }}

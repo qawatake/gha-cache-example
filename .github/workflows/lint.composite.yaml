@@ -1,0 +1,28 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+name: lint.composite
+permissions:
+  contents: read
+  actions: write # require to delete cache
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/gocache
+        id: gocache
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.mod
+            Makefile
+          cache-save: ${{ github.ref == 'refs/heads/main' }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Lint
+        run: make lint
+        env:
+          # https://golangci-lint.run/usage/configuration/#cache
+          GOLANGCI_LINT_CACHE: ${{ steps.gocache.outputs.golangci-lint-cache-path }}
