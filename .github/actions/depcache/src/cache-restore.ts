@@ -22,12 +22,16 @@ export const restoreCache = async (
 
   const linuxVersion =
     process.env.RUNNER_OS === 'Linux' ? `${process.env.ImageOS}-` : ''
-  const primaryKey = `depcache-${workflowId}-${jobId}-${platform}-${linuxVersion}${fileHash}`
+  const cacheKeyPrefix = `depcache-${workflowId}-${jobId}-${platform}-${linuxVersion}`
+  const primaryKey = `${cacheKeyPrefix}${fileHash}`
+  const secondaryKey = `${cacheKeyPrefix}`
   core.debug(`primary key is ${primaryKey}`)
 
   core.saveState(State.CachePrimaryKey, primaryKey)
 
-  const cacheKey = await cache.restoreCache([cachePath], primaryKey)
+  const cacheKey = await cache.restoreCache([cachePath], primaryKey, [
+    secondaryKey
+  ])
   core.setOutput(Outputs.CacheHit, Boolean(cacheKey))
 
   if (!cacheKey) {

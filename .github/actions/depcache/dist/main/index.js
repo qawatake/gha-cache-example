@@ -68178,10 +68178,14 @@ const restoreCache = async (workflowId, jobId, dependencyPath, cachePath) => {
         throw new Error('Some specified paths were not resolved, unable to cache dependencies.');
     }
     const linuxVersion = process.env.RUNNER_OS === 'Linux' ? `${process.env.ImageOS}-` : '';
-    const primaryKey = `depcache-${workflowId}-${jobId}-${platform}-${linuxVersion}${fileHash}`;
+    const cacheKeyPrefix = `depcache-${workflowId}-${jobId}-${platform}-${linuxVersion}`;
+    const primaryKey = `${cacheKeyPrefix}${fileHash}`;
+    const secondaryKey = `${cacheKeyPrefix}`;
     core.debug(`primary key is ${primaryKey}`);
     core.saveState(constants_1.State.CachePrimaryKey, primaryKey);
-    const cacheKey = await cache.restoreCache([cachePath], primaryKey);
+    const cacheKey = await cache.restoreCache([cachePath], primaryKey, [
+        secondaryKey
+    ]);
     core.setOutput(constants_1.Outputs.CacheHit, Boolean(cacheKey));
     if (!cacheKey) {
         core.info(`Cache is not found`);
