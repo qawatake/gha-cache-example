@@ -1,5 +1,5 @@
-import * as core from '@actions/core';
-import * as github from '@actions/github';
+import * as core from '@actions/core'
+import * as github from '@actions/github'
 import { wait } from './wait'
 import { restoreCache } from './cache-restore'
 
@@ -12,8 +12,8 @@ export async function run(): Promise<void> {
     restoreCache(
       github.context.workflow,
       github.context.job,
-      'go.dum',
-      '~/go/pkg/mod'
+      core.getInput('dependency-path'),
+      core.getInput('path')
     )
     const ms: string = core.getInput('milliseconds')
 
