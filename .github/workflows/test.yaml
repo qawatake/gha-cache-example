@@ -25,6 +25,7 @@ jobs:
         with:
           path: ~/.cache/go-build
           save-if: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           # save-if: ${{ github.ref == 'refs/heads/main' }}
       - name: Run tests
         run: make test
