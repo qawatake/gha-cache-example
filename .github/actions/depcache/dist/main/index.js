@@ -68330,7 +68330,6 @@ exports.run = run;
 exports.postRun = postRun;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-const wait_1 = __nccwpck_require__(5259);
 const cache_restore_1 = __nccwpck_require__(9517);
 const cache_save_1 = __nccwpck_require__(4553);
 /**
@@ -68340,13 +68339,6 @@ const cache_save_1 = __nccwpck_require__(4553);
 async function run() {
     try {
         (0, cache_restore_1.restoreCache)(github.context.workflow, github.context.job, core.getInput('dependency-path'), core.getInput('path'));
-        const ms = core.getInput('milliseconds');
-        // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-        core.debug(`Waiting ${ms} milliseconds ...`);
-        // Log the current timestamp, wait, then log the new timestamp
-        core.debug(new Date().toTimeString());
-        await (0, wait_1.wait)(parseInt(ms, 10));
-        core.debug(new Date().toTimeString());
         // Set outputs for other workflow steps to use
     }
     catch (error) {
@@ -68379,30 +68371,6 @@ async function postRun(earlyExit) {
         }
         core.warning(message);
     }
-}
-
-
-/***/ }),
-
-/***/ 5259:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.wait = wait;
-/**
- * Wait for a number of milliseconds.
- * @param milliseconds The number of milliseconds to wait.
- * @returns {Promise<string>} Resolves with 'done!' after the wait is over.
- */
-async function wait(milliseconds) {
-    return new Promise(resolve => {
-        if (isNaN(milliseconds)) {
-            throw new Error('milliseconds not a number');
-        }
-        setTimeout(() => resolve('done!'), milliseconds);
-    });
 }
 
 
