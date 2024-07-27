@@ -25,6 +25,7 @@ jobs:
           restore-keys: |
             ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-mod-
       - uses: actions/cache/restore@v3
+        id: cache-restore-build
         with:
           path: ${{ steps.cache-path.outputs.build }}
           key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-build
@@ -47,6 +48,14 @@ jobs:
           key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-mod-${{ hashFiles('**/go.sum') }}
           path: ${{ steps.cache-path.outputs.mod }}
       # delete cache for build
+      - name: Delete Previous Cache
+        if: always() && github.ref == 'refs/heads/main' && steps.cache-restore-build.outputs.cache-hit == 'true'
+        continue-on-error: true
+        run: |
+          gh extension install actions/gh-actions-cache
+          gh actions-cache delete "${{ steps.cache-restore-build.outputs.cache-primary-key }}" --confirm
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/cache/save@v3
         if: always() && github.ref == 'refs/heads/main'
         with:
