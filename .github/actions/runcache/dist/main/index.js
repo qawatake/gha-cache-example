@@ -65810,16 +65810,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.restoreCache = void 0;
 // some modifications were made to https://github.com/actions/setup-go/tree/v5.0.2/src
 const cache = __importStar(__nccwpck_require__(7799));
 const core = __importStar(__nccwpck_require__(2186));
+const crypto_1 = __importDefault(__nccwpck_require__(6113));
 const constants_1 = __nccwpck_require__(581);
 const restoreCache = async (workflowId, jobId, cachePath) => {
     const platform = process.env.RUNNER_OS;
-    const linuxVersion = process.env.RUNNER_OS === 'Linux' ? `-${process.env.ImageOS}` : '';
-    const primaryKey = `runcache-${workflowId}-${jobId}-${platform}${linuxVersion}`;
+    const linuxVersion = process.env.RUNNER_OS === 'Linux' ? `${process.env.ImageOS}-` : '';
+    const hash = crypto_1.default.createHash('md5').update(cachePath).digest();
+    const primaryKey = `runcache-${workflowId}-${jobId}-${platform}-${linuxVersion}${hash}`;
     core.debug(`primary key is ${primaryKey}`);
     core.saveState(constants_1.State.CachePrimaryKey, primaryKey);
     const cacheKey = await cache.restoreCache([cachePath], primaryKey);

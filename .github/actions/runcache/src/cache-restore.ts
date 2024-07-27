@@ -1,7 +1,7 @@
 // some modifications were made to https://github.com/actions/setup-go/tree/v5.0.2/src
 import * as cache from '@actions/cache'
 import * as core from '@actions/core'
-import * as glob from '@actions/glob'
+import crypto from 'crypto'
 
 import { State, Outputs } from './constants'
 
@@ -13,8 +13,9 @@ export const restoreCache = async (
   const platform = process.env.RUNNER_OS
 
   const linuxVersion =
-    process.env.RUNNER_OS === 'Linux' ? `-${process.env.ImageOS}` : ''
-  const primaryKey = `runcache-${workflowId}-${jobId}-${platform}${linuxVersion}`
+    process.env.RUNNER_OS === 'Linux' ? `${process.env.ImageOS}-` : ''
+  const hash = crypto.createHash('md5').update(cachePath).digest()
+  const primaryKey = `runcache-${workflowId}-${jobId}-${platform}-${linuxVersion}${hash}`
   core.debug(`primary key is ${primaryKey}`)
 
   core.saveState(State.CachePrimaryKey, primaryKey)

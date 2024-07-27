@@ -3,7 +3,6 @@ import * as core from '@actions/core'
 import * as cache from '@actions/cache'
 import * as github from '@actions/github'
 import { State } from './constants'
-import crypto from 'crypto'
 
 export const cachePackages = async (cachePath: string) => {
   const state = core.getState(State.CacheMatchedKey)
@@ -20,9 +19,6 @@ export const cachePackages = async (cachePath: string) => {
     core.info('skip saving cache.')
     return
   }
-  console.log(crypto.createHash('sha256').update('string').digest('hex'))
-  console.log(crypto.createHash('md5').update(cachePath).digest())
-  console.log(crypto.createHash('md5').update(cachePath).digest('hex'))
 
   if (primaryKey === state) {
     core.info(
