@@ -16,14 +16,11 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
-      # https://golangci-lint.run/usage/configuration/#cache
-      - run: echo "GOLANGCI_LINT_CACHE=${HOME}/.cache/golangci-lint" >> $GITHUB_ENV
-      - run: echo $GOLANGCI_LINT_CACHE
       - id: cache-path
         run: |
           echo "mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
           echo "build=$(go env GOCACHE)" >> $GITHUB_OUTPUT
-          echo "golangci-lint=$(go env GOLANGCI_LINT_CACHE)" >> $GITHUB_OUTPUT
+          echo "golangci-lint=${HOME}/.cache/golangci-lint" >> $GITHUB_OUTPUT
       - uses: actions/cache/restore@v3
         id: cache-restore-mod
         with:
@@ -39,10 +36,13 @@ jobs:
       - uses: actions/cache/restore@v3
         id: cache-restore-golangci-lint
         with:
-          path: ${{ steps.cache-path.outputs.build }}
-          key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-build
+          path: ${{ steps.cache-path.outputs.golangci-lint }}
+          key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-golangci-lint
       - name: Lint
         run: make lint
+        env:
+          # https://golangci-lint.run/usage/configuration/#cache
+          GOLANGCI_LINT_CACHE: ${{ steps.cache-path.outputs.golangci-lint }}
       - uses: actions/cache/save@v3
         if: always() && github.ref == 'refs/heads/main' && steps.cache-restore-mod.outputs.cache-hit != 'true'
         with:
@@ -62,3 +62,8 @@ jobs:
         with:
           key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-build
           path: ${{ steps.cache-path.outputs.build }}
+      - uses: actions/cache/save@v3
+        if: always() && github.ref == 'refs/heads/main'
+        with:
+          key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-golangci-lint
+          path: ${{ steps.cache-path.outputs.golangci-lint }}
