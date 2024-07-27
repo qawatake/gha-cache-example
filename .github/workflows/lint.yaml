@@ -16,10 +16,14 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
+      # https://golangci-lint.run/usage/configuration/#cache
+      - run: echo "GOLANGCI_LINT_CACHE=${HOME}/.cache/golangci-lint" >> $GITHUB_ENV
+      - run: echo $GOLANGCI_LINT_CACHE
       - id: cache-path
         run: |
           echo "mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
           echo "build=$(go env GOCACHE)" >> $GITHUB_OUTPUT
+          echo "golangci-lint=$(go env GOLANGCI_LINT_CACHE)" >> $GITHUB_OUTPUT
       - uses: actions/cache/restore@v3
         id: cache-restore-mod
         with:
@@ -29,6 +33,11 @@ jobs:
             ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-mod-
       - uses: actions/cache/restore@v3
         id: cache-restore-build
+        with:
+          path: ${{ steps.cache-path.outputs.build }}
+          key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-build
+      - uses: actions/cache/restore@v3
+        id: cache-restore-golangci-lint
         with:
           path: ${{ steps.cache-path.outputs.build }}
           key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-build
@@ -53,4 +62,3 @@ jobs:
         with:
           key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-build
           path: ${{ steps.cache-path.outputs.build }}
-
