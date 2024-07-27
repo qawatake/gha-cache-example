@@ -1,0 +1,31 @@
+name: 'The name of your action here'
+description: 'Provide a description here'
+# author: 'Your name or organization here'
+
+# Add your action's branding here. This will appear on the GitHub Marketplace.
+# branding:
+#   icon: 'heart'
+#   color: 'red'
+
+# Define your inputs here.
+inputs:
+  dependency-path:
+    description: 'Used to specify the path to a dependency file'
+    required: true
+  path:
+    description: 'Used to specify the path to the cache'
+    required: true
+  save-if:
+    description: |
+      Save cache if `save-if` is true and no cache exists.
+    required: true
+
+# Define your outputs here.
+# outputs:
+#   time:
+#     description: 'Your output description here'
+
+runs:
+  using: node20
+  main: dist/main/index.js
+  post: dist/post/index.js
