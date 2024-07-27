@@ -24,6 +24,7 @@ jobs:
       - uses: ./.github/actions/runcache
         with:
           path: ~/.cache/go-build
+          name: go-build
           skip-cache-save: ${{ github.ref != 'refs/heads/main' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run tests

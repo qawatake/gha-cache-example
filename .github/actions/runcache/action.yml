@@ -15,6 +15,9 @@ inputs:
   skip-cache-save:
     description: 'Used to specify whether to skip saving the cache'
     required: true
+  name:
+    description: 'Used to specify the name of the cache'
+    required: false
   github-token:
     description: 'Used to delete cache'
     required: true
