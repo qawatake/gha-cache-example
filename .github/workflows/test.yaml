@@ -16,7 +16,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
-      - uses: ./actions/depcache
+      - uses: ./.github/actions/depcache
         with:
           dependency-path: go.mod
           path: ~/go/pkg/mod
