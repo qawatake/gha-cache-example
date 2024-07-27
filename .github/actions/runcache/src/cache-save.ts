@@ -24,17 +24,16 @@ export const cachePackages = async (cachePath: string) => {
     core.info(
       `Cache hit occurred on the primary key ${primaryKey}, deleting cache.`
     )
-    const runId = github.context.runId
-
     // APIリクエストを行い、ジョブのステータスを取得
     const { data } = await github
       .getOctokit(core.getInput('github-token'))
-      .rest.actions.getWorkflowRun({
+      .rest.actions.listJobsForWorkflowRun({
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
-        run_id: runId
+        run_id: github.context.runId
       })
-    console.log(data.name, github.context.job, data.conclusion)
+    const job = data.jobs.find(job => job.name === github.context.job)
+    console.log(job?.name, github.context.job, job?.conclusion)
     await github
       .getOctokit(core.getInput('github-token'))
       .rest.actions.deleteActionsCacheByKey({
