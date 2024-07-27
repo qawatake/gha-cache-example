@@ -68228,36 +68228,17 @@ exports.cachePackages = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const cache = __importStar(__nccwpck_require__(7799));
 const constants_1 = __nccwpck_require__(581);
-// import { getCacheDirectoryPath, getPackageManagerInfo } from './cache-utils'
 const cachePackages = async (cachePath) => {
-    // const packageManager = 'default'
     const state = core.getState(constants_1.State.CacheMatchedKey);
     const primaryKey = core.getState(constants_1.State.CachePrimaryKey);
-    // const packageManagerInfo = await getPackageManagerInfo(packageManager);
-    // const cachePaths = await getCacheDirectoryPath(packageManagerInfo);
-    // const nonExistingPaths = [cachePath].filter(
-    //   cachePath => !fs.existsSync(cachePath)
-    // )
-    // if (nonExistingPaths.length === cachePaths.length) {
-    //   core.warning('There are no cache folders on the disk')
-    //   return
-    // }
-    // if (nonExistingPaths.length) {
-    //   logWarning(
-    //     `Cache folder path is retrieved but doesn't exist on disk: ${nonExistingPaths.join(
-    //       ', '
-    //     )}`
-    //   )
-    // }
-    // if (!primaryKey) {
-    //   core.info(
-    //     'Primary key was not generated. Please check the log messages above for more errors or information'
-    //   )
-    //   return
-    // }
-    core.debug(`save-if: ${core.getBooleanInput('save-if')}`);
-    core.debug(`cache-hit: ${state}`);
-    core.debug(`cache paths: ${[cachePath]}`);
+    if (!primaryKey) {
+        core.info('Primary key was not generated. Please check the log messages above for more errors or information');
+        return;
+    }
+    if (!core.getBooleanInput('save-if')) {
+        core.info('`save-if` is false, not saving cache.');
+        return;
+    }
     if (primaryKey === state) {
         core.info(`Cache hit occurred on the primary key ${primaryKey}, not saving cache.`);
         return;

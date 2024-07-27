@@ -1,45 +1,22 @@
 import * as core from '@actions/core'
 import * as cache from '@actions/cache'
-import fs from 'fs'
 import { State } from './constants'
-// import { getCacheDirectoryPath, getPackageManagerInfo } from './cache-utils'
 
 export const cachePackages = async (cachePath: string) => {
-  // const packageManager = 'default'
-
   const state = core.getState(State.CacheMatchedKey)
   const primaryKey = core.getState(State.CachePrimaryKey)
 
-  // const packageManagerInfo = await getPackageManagerInfo(packageManager);
+  if (!primaryKey) {
+    core.info(
+      'Primary key was not generated. Please check the log messages above for more errors or information'
+    )
+    return
+  }
 
-  // const cachePaths = await getCacheDirectoryPath(packageManagerInfo);
-
-  // const nonExistingPaths = [cachePath].filter(
-  //   cachePath => !fs.existsSync(cachePath)
-  // )
-
-  // if (nonExistingPaths.length === cachePaths.length) {
-  //   core.warning('There are no cache folders on the disk')
-  //   return
-  // }
-
-  // if (nonExistingPaths.length) {
-  //   logWarning(
-  //     `Cache folder path is retrieved but doesn't exist on disk: ${nonExistingPaths.join(
-  //       ', '
-  //     )}`
-  //   )
-  // }
-
-  // if (!primaryKey) {
-  //   core.info(
-  //     'Primary key was not generated. Please check the log messages above for more errors or information'
-  //   )
-  //   return
-  // }
-  core.debug(`save-if: ${core.getBooleanInput('save-if')}`)
-  core.debug(`cache-hit: ${state}`)
-  core.debug(`cache paths: ${[cachePath]}`)
+  if (!core.getBooleanInput('save-if')) {
+    core.info('`save-if` is false, not saving cache.')
+    return
+  }
 
   if (primaryKey === state) {
     core.info(
