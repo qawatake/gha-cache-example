@@ -25,16 +25,16 @@ jobs:
         with:
           dependency-path: go.mod
           path: ${{ steps.cache-path.outputs.mod }}
-          skip-cache-save: ${{ github.ref == 'refs/heads/main' }}
+          skip-cache-save: ${{ github.ref != 'refs/heads/main' }}
       - uses: ./.github/actions/runcache
         with:
           path: ${{ steps.cache-path.outputs.build }}
-          skip-cache-save: ${{ github.ref == 'refs/heads/main' }}
+          skip-cache-save: ${{ github.ref != 'refs/heads/main' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: ./.github/actions/runcache
         with:
           path: ${{ steps.cache-path.outputs.golangci-lint }}
-          skip-cache-save: ${{ github.ref == 'refs/heads/main' }}
+          skip-cache-save: ${{ github.ref != 'refs/heads/main' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Lint
         run: make lint

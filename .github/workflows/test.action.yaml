@@ -20,11 +20,11 @@ jobs:
         with:
           dependency-path: go.mod
           path: ~/go/pkg/mod
-          save-if: ${{ github.ref == 'refs/heads/main' }}
+          skip-cache-save: ${{ github.ref != 'refs/heads/main' }}
       - uses: ./.github/actions/runcache
         with:
           path: ~/.cache/go-build
-          save-if: ${{ github.ref == 'refs/heads/main' }}
+          skip-cache-save: ${{ github.ref != 'refs/heads/main' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run tests
         run: make test
