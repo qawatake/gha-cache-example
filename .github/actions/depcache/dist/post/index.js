@@ -61551,8 +61551,8 @@ const cachePackages = async (cachePath) => {
         core.info('Primary key was not generated. Please check the log messages above for more errors or information');
         return;
     }
-    if (!core.getBooleanInput('save-if')) {
-        core.info('`save-if` is false, not saving cache.');
+    if (core.getBooleanInput('skip-cache-save')) {
+        core.info('skip saving cache.');
         return;
     }
     if (primaryKey === state) {

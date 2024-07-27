@@ -15,8 +15,8 @@ export const cachePackages = async (cachePath: string) => {
     return
   }
 
-  if (!core.getBooleanInput('save-if')) {
-    core.info('`save-if` is false, not saving cache.')
+  if (core.getBooleanInput('skip-cache-save')) {
+    core.info('skip saving cache.')
     return
   }
 

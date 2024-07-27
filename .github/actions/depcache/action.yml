@@ -15,7 +15,7 @@ inputs:
   path:
     description: 'Used to specify the path to the cache'
     required: true
-  save-if:
+  skip-cache-save:
     description: |
       Save cache if `save-if` is true and no cache exists.
     required: true

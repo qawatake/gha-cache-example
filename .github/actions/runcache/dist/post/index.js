@@ -65824,21 +65824,19 @@ const cachePackages = async (cachePath) => {
         core.info('Primary key was not generated. Please check the log messages above for more errors or information');
         return;
     }
-    if (!core.getBooleanInput('save-if')) {
-        core.info('`save-if` is false, not saving cache.');
+    if (core.getBooleanInput('skip-cache-save')) {
+        core.info('skip saving cache.');
         return;
     }
     if (primaryKey === state) {
         core.info(`Cache hit occurred on the primary key ${primaryKey}, deleting cache.`);
-        const res = await github
+        await github
             .getOctokit(core.getInput('github-token'))
             .rest.actions.deleteActionsCacheByKey({
             key: primaryKey,
             owner: github.context.repo.owner,
             repo: github.context.repo.repo
         });
-        console.log(res.status);
-        core.info(`${res.data.total_count}`);
     }
     const cacheId = await cache.saveCache([cachePath], primaryKey);
     if (cacheId === -1) {
