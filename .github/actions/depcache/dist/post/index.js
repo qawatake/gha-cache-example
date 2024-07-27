@@ -68332,15 +68332,11 @@ async function run() {
 // - https://github.com/actions/setup-node/issues/878
 // https://github.com/actions/cache/pull/1217
 async function postRun(earlyExit) {
-    core.debug('😈');
     try {
-        // const cacheInput = core.getBooleanInput('cache')
-        // if (cacheInput) {
         await (0, cache_save_1.cachePackages)(core.getInput('path'));
         if (earlyExit) {
             process.exit(0);
         }
-        // }
     }
     catch (error) {
         let message = 'Unknown error!';
@@ -68387,10 +68383,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
-// import * as cache from '@actions/cache'
-// import fs from 'fs'
-// import { State } from './constants'
-// import { getCacheDirectoryPath, getPackageManagerInfo } from './cache-utils'
 const main_1 = __nccwpck_require__(399);
 // Catch and log any unhandled exceptions.  These exceptions can leak out of the uploadChunk method in
 // @actions/toolkit when a failed upload closes the file descriptor causing any in-process reads to

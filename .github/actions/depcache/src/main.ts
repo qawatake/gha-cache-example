@@ -1,6 +1,5 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { wait } from './wait'
 import { restoreCache } from './cache-restore'
 import { cachePackages } from './cache-save'
 
@@ -27,16 +26,12 @@ export async function run(): Promise<void> {
 // - https://github.com/actions/setup-node/issues/878
 // https://github.com/actions/cache/pull/1217
 export async function postRun(earlyExit?: boolean) {
-  core.debug('😈')
   try {
-    // const cacheInput = core.getBooleanInput('cache')
-    // if (cacheInput) {
     await cachePackages(core.getInput('path'))
 
     if (earlyExit) {
       process.exit(0)
     }
-    // }
   } catch (error) {
     let message = 'Unknown error!'
     if (error instanceof Error) {

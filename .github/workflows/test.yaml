@@ -16,7 +16,6 @@ jobs:
         with:
           go-version-file: go.mod
           cache: false
-      - run: go env GOMODCACHE
       - uses: ./.github/actions/depcache
         with:
           dependency-path: go.mod
