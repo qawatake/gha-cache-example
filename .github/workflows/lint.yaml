@@ -62,6 +62,15 @@ jobs:
         with:
           key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-build
           path: ${{ steps.cache-path.outputs.build }}
+      # delete cache for golangci-lint
+      - name: Delete Previous Cache
+        if: always() && github.ref == 'refs/heads/main' && steps.cache-restore-golangci-lint.outputs.cache-hit == 'true'
+        continue-on-error: true
+        run: |
+          gh extension install actions/gh-actions-cache
+          gh actions-cache delete "${{ steps.cache-restore-golangci-lint.outputs.cache-primary-key }}" --confirm
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/cache/save@v3
         if: always() && github.ref == 'refs/heads/main'
         with:
