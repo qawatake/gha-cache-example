@@ -65830,6 +65830,16 @@ const cachePackages = async (cachePath) => {
     }
     if (primaryKey === state) {
         core.info(`Cache hit occurred on the primary key ${primaryKey}, deleting cache.`);
+        const runId = github.context.runId;
+        // APIリクエストを行い、ジョブのステータスを取得
+        const { data } = await github
+            .getOctokit(core.getInput('github-token'))
+            .rest.actions.getWorkflowRun({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            run_id: runId
+        });
+        console.log(data.name, github.context.job, data.conclusion);
         await github
             .getOctokit(core.getInput('github-token'))
             .rest.actions.deleteActionsCacheByKey({

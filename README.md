@@ -39,15 +39,18 @@
         - 基本はpushのたびとか定期実行をトリガーとしてcacheを作り直すのでファイルのhashとかは使わない。
 - cache keyにgithub.workflowやgithub.jobを使う理由
   - cacheが複数のworkflowで共有されるとライフサイクルが追いづらくなるため。
+  - 例えば、`go test -race`だけ行うjobと`go build`だけ行うjobがあるとき、cacheの内容は大きく異なるはずだが、同じキーを使ってしまうとcacheが共有されてしまう。
   - main branchへのpushでしかcacheをsaveしないのでファイル単位でcacheを切っても作りすぎることはない。
-- delete cacheする理由
-  - [GitHub Actions overwrite cache example repo](https://github.com/azu/github-actions-overwrite-cache-example)
-  - cache keyに2, 3のバリエーションを用意して、restore-keysで対応すれば必ずしも削除しなくていい。
+- ビルドキャッシュをdeleteする理由
+  - ビルドやテストのcacheは基本的には実行のたびに内容が変わるはずなため。
   - 削除しちゃったほうがcacheの容量の節約にもなるし、分かりやすさも増す気がする。
+  - cache keyに2, 3のバリエーションを用意して、restore-keysで対応すれば必ずしも削除しなくていい。
+  - [GitHub Actions overwrite cache example repo](https://github.com/azu/github-actions-overwrite-cache-example)
 - cache/saveにalwaysをつける理由
   - [Always save cache](https://github.com/actions/setup-go/blob/0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32/src/package-managers.ts#L13)
   - 失敗してもcacheは保存したいのでalwaysをつける。
   - ただ、CI通ったあとのmainでしかcache saveしないので別にalwaysをつけなくてもいいかもしれない。
+  - modのcacheはそれでいいが、buildのcacheは既存のものをそのまま使ったほうがいいかもしれない。
 
 ## References
 
