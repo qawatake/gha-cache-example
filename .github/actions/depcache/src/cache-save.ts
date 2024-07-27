@@ -39,6 +39,7 @@ export const cachePackages = async (cachePath: string) => {
   // }
   core.debug(`save-if: ${core.getBooleanInput('save-if')}`)
   core.debug(`cache-hit: ${state}`)
+  core.debug(`cache paths: ${[cachePath]}`)
 
   if (primaryKey === state) {
     core.info(

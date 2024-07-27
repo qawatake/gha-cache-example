@@ -68257,6 +68257,7 @@ const cachePackages = async (cachePath) => {
     // }
     core.debug(`save-if: ${core.getBooleanInput('save-if')}`);
     core.debug(`cache-hit: ${state}`);
+    core.debug(`cache paths: ${[cachePath]}`);
     if (primaryKey === state) {
         core.info(`Cache hit occurred on the primary key ${primaryKey}, not saving cache.`);
         return;
