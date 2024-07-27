@@ -42,13 +42,13 @@ jobs:
         run: make test
       - run: exit 1
       - uses: actions/cache/save@v3
-        if: github.ref == 'refs/heads/main' && steps.cache-restore-mod.outputs.cache-hit != 'true'
+        if: always() && github.ref == 'refs/heads/main' && steps.cache-restore-mod.outputs.cache-hit != 'true'
         with:
           key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-mod-${{ hashFiles('**/go.sum') }}
           path: ${{ steps.cache-path.outputs.mod }}
       # delete cache for build
       - uses: actions/cache/save@v3
-        if: github.ref == 'refs/heads/main'
+        if: always() && github.ref == 'refs/heads/main'
         with:
           key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-build
           path: ${{ steps.cache-path.outputs.build }}
