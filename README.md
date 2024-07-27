@@ -1,4 +1,4 @@
-# go-github-action-cache-example
+# Go GHA Cache Example
 
 - mainへのpushだけcache saveする理由
   - PRやfeature branchでsaveしたcacheは他から利用できないので無駄。
