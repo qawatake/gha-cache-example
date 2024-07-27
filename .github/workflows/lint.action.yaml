@@ -41,7 +41,7 @@ jobs:
           skip-cache-save: ${{ github.ref != 'refs/heads/main' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Lint
-        run: make lint && exit 1
+        run: make lint
         env:
           # https://golangci-lint.run/usage/configuration/#cache
           GOLANGCI_LINT_CACHE: ${{ steps.cache-path.outputs.golangci-lint }}

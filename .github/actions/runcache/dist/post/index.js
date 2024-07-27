@@ -65830,16 +65830,6 @@ const cachePackages = async (cachePath) => {
     }
     if (primaryKey === state) {
         core.info(`Cache hit occurred on the primary key ${primaryKey}, deleting cache.`);
-        // APIリクエストを行い、ジョブのステータスを取得
-        const { data } = await github
-            .getOctokit(core.getInput('github-token'))
-            .rest.actions.listJobsForWorkflowRun({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            run_id: github.context.runId
-        });
-        const job = data.jobs.find(job => job.name === github.context.job);
-        console.log(job?.name, github.context.job, job?.conclusion);
         await github
             .getOctokit(core.getInput('github-token'))
             .rest.actions.deleteActionsCacheByKey({

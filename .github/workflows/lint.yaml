@@ -39,7 +39,7 @@ jobs:
           path: ${{ steps.cache-path.outputs.golangci-lint }}
           key: ${{ github.workflow}}-${{ github.job }}-${{ runner.os }}-golangci-lint
       - name: Lint
-        run: make lint && exit 1
+        run: make lint
         env:
           # https://golangci-lint.run/usage/configuration/#cache
           GOLANGCI_LINT_CACHE: ${{ steps.cache-path.outputs.golangci-lint }}
