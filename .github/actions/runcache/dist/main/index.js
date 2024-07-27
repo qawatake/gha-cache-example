@@ -65823,7 +65823,7 @@ const constants_1 = __nccwpck_require__(581);
 const restoreCache = async (workflowId, jobId, cachePath) => {
     const platform = process.env.RUNNER_OS;
     const linuxVersion = process.env.RUNNER_OS === 'Linux' ? `${process.env.ImageOS}-` : '';
-    const hash = crypto_1.default.createHash('md5').update(cachePath).digest();
+    const hash = crypto_1.default.createHash('md5').update(cachePath).digest('hex');
     const primaryKey = `runcache-${workflowId}-${jobId}-${platform}-${linuxVersion}${hash}`;
     core.debug(`primary key is ${primaryKey}`);
     core.saveState(constants_1.State.CachePrimaryKey, primaryKey);
