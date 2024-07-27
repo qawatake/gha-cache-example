@@ -18,7 +18,9 @@ jobs:
           cache: false
       - uses: ./.github/actions/depcache
         with:
-          dependency-path: go.mod
+          dependency-path: |
+            go.mod
+            Makefile
           path: ~/go/pkg/mod
           skip-cache-save: ${{ github.ref != 'refs/heads/main' }}
       - uses: ./.github/actions/runcache
