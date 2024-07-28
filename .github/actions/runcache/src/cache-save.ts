@@ -22,6 +22,9 @@ export const cachePackages = async (cachePath: string) => {
     workflow_id: workflowRun.workflow_id
   })
   core.info(`workflow path: ${workflow.path}`)
+  core.info(
+    workflow.path.replace(/^\.github\/workflows\//, '').replaceAll(',', '-')
+  )
   console.log(workflow)
 
   if (!primaryKey) {
