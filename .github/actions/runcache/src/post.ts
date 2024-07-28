@@ -15,7 +15,7 @@ process.on('uncaughtException', e => {
 // https://github.com/actions/cache/pull/1217
 async function run(earlyExit?: boolean) {
   try {
-    await cachePackages(core.getInput('path'))
+    await cachePackages(core.getInput('path'), core.getInput('github-token'))
 
     if (earlyExit) {
       process.exit(0)

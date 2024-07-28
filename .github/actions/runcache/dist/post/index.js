@@ -65817,22 +65817,18 @@ const core = __importStar(__nccwpck_require__(2186));
 const cache = __importStar(__nccwpck_require__(7799));
 const github = __importStar(__nccwpck_require__(5438));
 const constants_1 = __nccwpck_require__(581);
-const cachePackages = async (cachePath) => {
+const cachePackages = async (cachePath, token) => {
     const state = core.getState(constants_1.State.CacheMatchedKey);
     const primaryKey = core.getState(constants_1.State.CachePrimaryKey);
+    const oktokit = github.getOctokit(token);
     if (!primaryKey) {
         core.info('Primary key was not generated. Please check the log messages above for more errors or information');
         return;
     }
-    if (core.getBooleanInput('skip-cache-save')) {
-        core.info('skip saving cache.');
-        return;
-    }
-    if (primaryKey === state) {
+    const cacheHit = primaryKey === state;
+    if (cacheHit) {
         core.info(`Cache hit occurred on the primary key ${primaryKey}, deleting cache.`);
-        await github
-            .getOctokit(core.getInput('github-token'))
-            .rest.actions.deleteActionsCacheByKey({
+        await oktokit.rest.actions.deleteActionsCacheByKey({
             key: primaryKey,
             owner: github.context.repo.owner,
             repo: github.context.repo.repo
@@ -65914,7 +65910,7 @@ process.on('uncaughtException', e => {
 // https://github.com/actions/cache/pull/1217
 async function run(earlyExit) {
     try {
-        await (0, cache_save_1.cachePackages)(core.getInput('path'));
+        await (0, cache_save_1.cachePackages)(core.getInput('path'), core.getInput('github-token'));
         if (earlyExit) {
             process.exit(0);
         }

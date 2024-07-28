@@ -12,15 +12,16 @@ inputs:
   path:
     description: 'Used to specify the path to the cache'
     required: true
-  skip-cache-save:
+  skip-save:
     description: 'Used to specify whether to skip saving the cache'
     required: true
-  name:
-    description: 'Used to specify the name of the cache'
-    required: false
   github-token:
     description: 'Used to delete cache'
     required: true
+  save-on-failure:
+    description: 'Used to specify whether to save the cache on failure'
+    required: false
+    default: 'false'
 
 # Define your outputs here.
 # outputs:
@@ -31,4 +32,6 @@ runs:
   using: node20
   main: dist/main/index.js
   post: dist/post/index.js
-  post-if: success()
+  post-if:
+    '!github.event.inputs.skip-save && (success() ||
+    github.event.inputs.save-on-failure)'

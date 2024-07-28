@@ -4,9 +4,10 @@ import * as cache from '@actions/cache'
 import * as github from '@actions/github'
 import { State } from './constants'
 
-export const cachePackages = async (cachePath: string) => {
+export const cachePackages = async (cachePath: string, token: string) => {
   const state = core.getState(State.CacheMatchedKey)
   const primaryKey = core.getState(State.CachePrimaryKey)
+  const oktokit = github.getOctokit(token)
 
   if (!primaryKey) {
     core.info(
@@ -15,22 +16,16 @@ export const cachePackages = async (cachePath: string) => {
     return
   }
 
-  if (core.getBooleanInput('skip-cache-save')) {
-    core.info('skip saving cache.')
-    return
-  }
-
-  if (primaryKey === state) {
+  const cacheHit = primaryKey === state
+  if (cacheHit) {
     core.info(
       `Cache hit occurred on the primary key ${primaryKey}, deleting cache.`
     )
-    await github
-      .getOctokit(core.getInput('github-token'))
-      .rest.actions.deleteActionsCacheByKey({
-        key: primaryKey,
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo
-      })
+    await oktokit.rest.actions.deleteActionsCacheByKey({
+      key: primaryKey,
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo
+    })
   }
 
   const cacheId = await cache.saveCache([cachePath], primaryKey)

@@ -68170,15 +68170,30 @@ exports.restoreCache = void 0;
 const cache = __importStar(__nccwpck_require__(7799));
 const core = __importStar(__nccwpck_require__(2186));
 const glob = __importStar(__nccwpck_require__(8090));
+const github = __importStar(__nccwpck_require__(5438));
 const constants_1 = __nccwpck_require__(581);
-const restoreCache = async (workflowId, jobId, dependencyPath, cachePath) => {
-    const platform = process.env.RUNNER_OS;
+const restoreCache = async (jobId, dependencyPath, cachePath, token) => {
     const fileHash = await glob.hashFiles(dependencyPath);
     if (!fileHash) {
         throw new Error('Some specified paths were not resolved, unable to cache dependencies.');
     }
+    const oktokit = github.getOctokit(token);
+    const { data: workflowRun } = await oktokit.rest.actions.getWorkflowRun({
+        repo: github.context.repo.repo,
+        owner: github.context.repo.owner,
+        run_id: github.context.runId
+    });
+    const { data: workflow } = await oktokit.rest.actions.getWorkflow({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        workflow_id: workflowRun.workflow_id
+    });
+    const workflowPath = workflow.path
+        .replace(/^\.github\/workflows\//, '')
+        .replaceAll(',', '-');
+    const platform = process.env.RUNNER_OS;
     const linuxVersion = process.env.RUNNER_OS === 'Linux' ? `${process.env.ImageOS}-` : '';
-    const cacheKeyPrefix = `depcache-${workflowId}-${jobId}-${platform}-${linuxVersion}`;
+    const cacheKeyPrefix = `depcache-${workflowPath}-${jobId}-${platform}-${linuxVersion}`;
     const primaryKey = `${cacheKeyPrefix}${fileHash}`;
     const secondaryKey = `${cacheKeyPrefix}`;
     core.debug(`primary key is ${primaryKey}`);
@@ -68260,7 +68275,7 @@ const cache_restore_1 = __nccwpck_require__(9517);
  */
 async function run() {
     try {
-        (0, cache_restore_1.restoreCache)(github.context.workflow, github.context.job, core.getInput('dependency-path'), core.getInput('path'));
+        (0, cache_restore_1.restoreCache)(github.context.job, core.getInput('dependency-path'), core.getInput('path'), core.getInput('github-token'));
         // Set outputs for other workflow steps to use
     }
     catch (error) {

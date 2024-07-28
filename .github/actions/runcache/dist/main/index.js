@@ -65819,15 +65819,30 @@ exports.restoreCache = void 0;
 const cache = __importStar(__nccwpck_require__(7799));
 const core = __importStar(__nccwpck_require__(2186));
 const crypto_1 = __importDefault(__nccwpck_require__(6113));
+const github = __importStar(__nccwpck_require__(5438));
 const constants_1 = __nccwpck_require__(581);
-const restoreCache = async (workflowId, jobId, cachePath) => {
+const restoreCache = async (jobId, cachePath, token) => {
+    const oktokit = github.getOctokit(token);
+    const { data: workflowRun } = await oktokit.rest.actions.getWorkflowRun({
+        repo: github.context.repo.repo,
+        owner: github.context.repo.owner,
+        run_id: github.context.runId
+    });
+    const { data: workflow } = await oktokit.rest.actions.getWorkflow({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        workflow_id: workflowRun.workflow_id
+    });
+    const workflowPath = workflow.path
+        .replace(/^\.github\/workflows\//, '')
+        .replaceAll(',', '-');
     const platform = process.env.RUNNER_OS;
     const linuxVersion = process.env.RUNNER_OS === 'Linux' ? `${process.env.ImageOS}-` : '';
-    const name = core.getInput('name');
-    const id = name !== ''
-        ? name
-        : crypto_1.default.createHash('md5').update(cachePath).digest('hex');
-    const primaryKey = `runcache-${workflowId}-${jobId}-${platform}-${linuxVersion}${id}`;
+    const hash = crypto_1.default.createHash('md5').update(cachePath).digest('hex');
+    // (workflow, job id, cache path)でactionの呼び出しを一意に特定できる。
+    // cache pathが必要なのは、composite actionから同じactionを複数回呼び出した場合にはworkflow pathとjob idだけでは一意に特定できないため。
+    // jobが同じなのにcache pathが同じだとそもそもエラーになるはず。
+    const primaryKey = `runcache-${workflowPath}-${jobId}-${platform}-${linuxVersion}${hash}`;
     core.debug(`primary key is ${primaryKey}`);
     core.saveState(constants_1.State.CachePrimaryKey, primaryKey);
     const cacheKey = await cache.restoreCache([cachePath], primaryKey);
@@ -65905,7 +65920,7 @@ const cache_restore_1 = __nccwpck_require__(9517);
  */
 async function run() {
     try {
-        (0, cache_restore_1.restoreCache)(github.context.workflow, github.context.job, core.getInput('path'));
+        (0, cache_restore_1.restoreCache)(github.context.job, core.getInput('path'), core.getInput('github-token'));
         // Set outputs for other workflow steps to use
     }
     catch (error) {
