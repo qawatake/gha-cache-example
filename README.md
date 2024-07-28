@@ -1,6 +1,6 @@
-# Go GHA Cache Example
+# GHA Cache Example
 
-GitHub ActionsでGoのビルドやテストのキャッシュをいい感じに使うために試行錯誤したリポジトリ。
+GitHub Actionsでビルドやテストのキャッシュをいい感じに使うために試行錯誤したリポジトリ。
 
 ## イケてない例
 
