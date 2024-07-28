@@ -28,8 +28,10 @@ GitHub ActionsでGoのビルドやテストのキャッシュをいい感じに�
 ## 検討
 
 - mainへのpushだけcache saveする理由
-  - PRやfeature branchでsaveしたcacheは他から利用できないので無駄。
-  - default branchでcacheしないと各PRは都度cacheを作り直すことになる。
+  - PRごとにcacheは別物になるため容量を圧迫してしまう。容量を超えると自動でcacheが削除されてhitしなくなる。
+    - [E2Eテストワークフローを高速化・安定化させる取り組み | ドクセル](https://www.docswell.com/s/r4mimu/ZXYR73-2024-05-16-184345#p13)
+  - そもそもmain branchでキャッシュを作れているか？？
+    - 作れていないと、どのPRも最初の一回目の実行ではcacheが使えていないかも。
 - cache keyをmodとbuildで使い分けている理由
   - modとbuildはcacheの理想的な更新頻度が違うので別々にする。
     - mod: go.modが変わったらcacheを作り直す
@@ -41,8 +43,10 @@ GitHub ActionsでGoのビルドやテストのキャッシュをいい感じに�
         - 基本はpushのたびとか定期実行をトリガーとしてcacheを作り直すのでファイルのhashとかは使わない。
 - cache keyにgithub.workflowやgithub.jobを使う理由
   - cacheが複数のworkflowで共有されるとライフサイクルが追いづらくなるため。
-  - 例えば、`go test -race`だけ行うjobと`go build`だけ行うjobがあるとき、cacheの内容は大きく異なるはずだが、同じキーを使ってしまうとcacheが共有されてしまう。
-  - main branchへのpushでしかcacheをsaveしないのでファイル単位でcacheを切っても作りすぎることはない。
+  - またjobによってcacheの内容が大きく異なる場合があるため。
+    - 例えば、`go test -race`だけ行うjobと`go build`だけ行うjobがあるとき、cacheの内容は大きく異なるはずだが、同じキーを使ってしまうとcacheが共有されてしまい非効率。
+    - 小さいcacheと大きいcacheがあるのに同じkeyを使ってしまうと、運悪く小さいcacheをずっと使い続けるようなことが起こりうる。
+  - main branchへのpushでしかcacheをsaveしない運用にすれば、ファイル単位でcacheを切っても作りすぎることはない。
 - ビルドキャッシュをdeleteする理由
   - ビルドやテストのcacheは基本的には実行のたびに内容が変わるはずなため。
   - 削除しちゃったほうがcacheの容量の節約にもなるし、分かりやすさも増す気がする。
