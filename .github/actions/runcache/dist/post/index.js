@@ -65820,6 +65820,21 @@ const constants_1 = __nccwpck_require__(581);
 const cachePackages = async (cachePath) => {
     const state = core.getState(constants_1.State.CacheMatchedKey);
     const primaryKey = core.getState(constants_1.State.CachePrimaryKey);
+    const oktokit = github.getOctokit(core.getInput('github-token'));
+    github.context.runId;
+    github.getOctokit(core.getInput('github-token')).rest.actions.getWorkflow();
+    const { data: workflowRun } = await oktokit.rest.actions.getWorkflowRun({
+        repo: github.context.repo.repo,
+        owner: github.context.repo.owner,
+        run_id: github.context.runId
+    });
+    const { data: workflow } = await oktokit.rest.actions.getWorkflow({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        workflow_id: workflowRun.workflow_id
+    });
+    core.info(`workflow path: ${workflow.path}`);
+    console.log(workflow);
     if (!primaryKey) {
         core.info('Primary key was not generated. Please check the log messages above for more errors or information');
         return;

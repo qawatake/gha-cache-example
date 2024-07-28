@@ -22,7 +22,7 @@ export const cachePackages = async (cachePath: string) => {
     workflow_id: workflowRun.workflow_id
   })
   core.info(`workflow path: ${workflow.path}`)
-  core.log(workflow)
+  console.log(workflow)
 
   if (!primaryKey) {
     core.info(
