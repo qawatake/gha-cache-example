@@ -39,7 +39,7 @@ runs:
     - uses: ./.github/actions/runcache
       with:
         path: ${{ steps.cache-path.outputs.build }}
-        cache-save: ${{ !inputs.cache-save }}
+        skip-save: ${{ !inputs.cache-save }}
         github-token: ${{ inputs.github-token }}
     - uses: ./.github/actions/runcache
       if : ${{ inputs.enable-golangci-lint-cache }}
