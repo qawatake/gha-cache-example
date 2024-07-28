@@ -32,7 +32,7 @@ jobs:
         with:
           path: ${{ steps.cache-path.outputs.build }}
           name: go-build
-          skip-cache-save: ${{ github.ref != 'refs/heads/main' }}
+          skip-cache-save: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: ./.github/actions/runcache
         with:
