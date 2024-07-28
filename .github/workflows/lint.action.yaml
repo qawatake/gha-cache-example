@@ -3,6 +3,7 @@ on:
     branches:
       - main
   pull_request:
+name: lint
 permissions:
   contents: read
   actions: write # require to delete cache
