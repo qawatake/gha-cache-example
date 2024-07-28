@@ -2,16 +2,16 @@
 import * as cache from '@actions/cache'
 import * as core from '@actions/core'
 import * as glob from '@actions/glob'
+import * as github from '@actions/github'
 
 import { State, Outputs } from './constants'
 
 export const restoreCache = async (
-  workflowId: string,
   jobId: string,
   dependencyPath: string,
-  cachePath: string
+  cachePath: string,
+  token: string
 ) => {
-  const platform = process.env.RUNNER_OS
   const fileHash = await glob.hashFiles(dependencyPath)
 
   if (!fileHash) {
@@ -19,10 +19,24 @@ export const restoreCache = async (
       'Some specified paths were not resolved, unable to cache dependencies.'
     )
   }
-
+  const oktokit = github.getOctokit(token)
+  const { data: workflowRun } = await oktokit.rest.actions.getWorkflowRun({
+    repo: github.context.repo.repo,
+    owner: github.context.repo.owner,
+    run_id: github.context.runId
+  })
+  const { data: workflow } = await oktokit.rest.actions.getWorkflow({
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
+    workflow_id: workflowRun.workflow_id
+  })
+  const workflowPath = workflow.path
+    .replace(/^\.github\/workflows\//, '')
+    .replaceAll(',', '-')
+  const platform = process.env.RUNNER_OS
   const linuxVersion =
     process.env.RUNNER_OS === 'Linux' ? `${process.env.ImageOS}-` : ''
-  const cacheKeyPrefix = `depcache-${workflowId}-${jobId}-${platform}-${linuxVersion}`
+  const cacheKeyPrefix = `depcache-${workflowPath}-${jobId}-${platform}-${linuxVersion}`
   const primaryKey = `${cacheKeyPrefix}${fileHash}`
   const secondaryKey = `${cacheKeyPrefix}`
   core.debug(`primary key is ${primaryKey}`)

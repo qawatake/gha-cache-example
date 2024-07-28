@@ -14,12 +14,8 @@ export const cachePackages = async (cachePath: string) => {
     return
   }
 
-  if (core.getBooleanInput('skip-cache-save')) {
-    core.info('skip saving cache.')
-    return
-  }
-
-  if (primaryKey === state) {
+  const cacheHit = primaryKey === state
+  if (cacheHit) {
     core.info(
       `Cache hit occurred on the primary key ${primaryKey}, not saving cache.`
     )

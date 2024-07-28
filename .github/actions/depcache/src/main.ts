@@ -10,10 +10,10 @@ import { restoreCache } from './cache-restore'
 async function run(): Promise<void> {
   try {
     restoreCache(
-      github.context.workflow,
       github.context.job,
       core.getInput('dependency-path'),
-      core.getInput('path')
+      core.getInput('path'),
+      core.getInput('github-token')
     )
     // Set outputs for other workflow steps to use
   } catch (error) {
