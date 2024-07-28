@@ -33,5 +33,5 @@ runs:
   main: dist/main/index.js
   post: dist/post/index.js
   post-if:
-    'github.event.inputs.skip-save && (success() ||
+    '!github.event.inputs.skip-save && (success() ||
     github.event.inputs.save-on-failure)'
