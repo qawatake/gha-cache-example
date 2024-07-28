@@ -65834,7 +65834,8 @@ const cachePackages = async (cachePath) => {
         workflow_id: workflowRun.workflow_id
     });
     core.info(`workflow path: ${workflow.path}`);
-    core.info(workflow.path.replace(/^\.github\/workflows\//, '').replaceAll(',', '-'));
+    const path = workflow.path + ',';
+    core.info(path.replace(/^\.github\/workflows\//, '').replaceAll(',', '-'));
     console.log(workflow);
     if (!primaryKey) {
         core.info('Primary key was not generated. Please check the log messages above for more errors or information');
