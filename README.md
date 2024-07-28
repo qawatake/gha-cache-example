@@ -1,6 +1,8 @@
 # Go GHA Cache Example
 
-## 概要
+GitHub ActionsでGoのビルドやテストのキャッシュをいい感じに使うために試行錯誤したリポジトリ。
+
+## 例
 
 - .github/workflows/test.yaml, .github/workflows/lint.yaml: [検討](#検討)を既存のactionsで実装した例
 - .github/workflows/test.action.yaml, .github/workflows/lint.action.yaml: [検討](#検討)を自作のactionsで実装した例
