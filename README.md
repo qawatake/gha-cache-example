@@ -2,11 +2,25 @@
 
 GitHub ActionsでGoのビルドやテストのキャッシュをいい感じに使うために試行錯誤したリポジトリ。
 
-## 例
+## イケてない例
+
+[イケてない例 by qawatake · Pull Request #4 · qawatake/go-gha-cache-example](https://github.com/qawatake/go-gha-cache-example/pull/4)
+
+素朴なsetup-goを使ったCIの例をPRにして、そのイケてないところをコメントしている。
+
+## 改善例
 
 - .github/workflows/test.yaml, .github/workflows/lint.yaml: [検討](#検討)を既存のactionsで実装した例
+  - だいぶ見づらい。
+  - 標準のcache/saveがなぜか遅い。
 - .github/workflows/test.action.yaml, .github/workflows/lint.action.yaml: [検討](#検討)を自作のactionsで実装した例
+  - 見やすくなった。
+    - cache keyの生成・利用ロジックを隠蔽できている。
+    - post runの仕組みを使うことで、cacheのrestore/saveを1actionにまとめられている。
+  - 標準のcache/saveよりなぜか早い。
 - .github/workflows/lint.composite.yaml: 自作のactionsをさらにcomposite actionとしてまとめてgo setupをいい感じにラップした例
+  - easyにはなってる。
+  - build cacheとmod cacheのsaveで条件を一部共有してしまっているので、build cache saveの細かい制御がやりづらくなっている。
 
 ## 自作のactions
 
