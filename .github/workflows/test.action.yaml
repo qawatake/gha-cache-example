@@ -22,7 +22,8 @@ jobs:
             go.mod
             Makefile
           path: ~/go/pkg/mod
-          skip-cache-save: ${{ github.ref != 'refs/heads/main' }}
+          skip-save: ${{ github.ref != 'refs/heads/main' }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: ./.github/actions/runcache
         with:
           path: ~/.cache/go-build
