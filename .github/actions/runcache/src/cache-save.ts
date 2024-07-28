@@ -7,6 +7,22 @@ import { State } from './constants'
 export const cachePackages = async (cachePath: string) => {
   const state = core.getState(State.CacheMatchedKey)
   const primaryKey = core.getState(State.CachePrimaryKey)
+  const oktokit = github.getOctokit(core.getInput('github-token'))
+
+  github.context.runId
+  github.getOctokit(core.getInput('github-token')).rest.actions.getWorkflow()
+  const { data: workflowRun } = await oktokit.rest.actions.getWorkflowRun({
+    repo: github.context.repo.repo,
+    owner: github.context.repo.owner,
+    run_id: github.context.runId
+  })
+  const { data: workflow } = await oktokit.rest.actions.getWorkflow({
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
+    workflow_id: workflowRun.workflow_id
+  })
+  core.info(`workflow path: ${workflow.path}`)
+  core.log(workflow)
 
   if (!primaryKey) {
     core.info(
