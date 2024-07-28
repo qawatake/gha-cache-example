@@ -31,14 +31,12 @@ jobs:
       - uses: ./.github/actions/runcache
         with:
           path: ${{ steps.cache-path.outputs.build }}
-          name: go-build
-          skip-cache-save: false
+          skip-save: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: ./.github/actions/runcache
         with:
           path: ${{ steps.cache-path.outputs.golangci-lint }}
-          name: golangci-lint
-          skip-cache-save: ${{ github.ref != 'refs/heads/main' }}
+          skip-save: ${{ github.ref != 'refs/heads/main' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Lint
         run: make lint

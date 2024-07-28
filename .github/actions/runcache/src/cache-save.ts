@@ -4,27 +4,10 @@ import * as cache from '@actions/cache'
 import * as github from '@actions/github'
 import { State } from './constants'
 
-export const cachePackages = async (cachePath: string) => {
+export const cachePackages = async (cachePath: string, token: string) => {
   const state = core.getState(State.CacheMatchedKey)
   const primaryKey = core.getState(State.CachePrimaryKey)
-  const oktokit = github.getOctokit(core.getInput('github-token'))
-
-  github.context.runId
-  github.getOctokit(core.getInput('github-token')).rest.actions.getWorkflow()
-  const { data: workflowRun } = await oktokit.rest.actions.getWorkflowRun({
-    repo: github.context.repo.repo,
-    owner: github.context.repo.owner,
-    run_id: github.context.runId
-  })
-  const { data: workflow } = await oktokit.rest.actions.getWorkflow({
-    owner: github.context.repo.owner,
-    repo: github.context.repo.repo,
-    workflow_id: workflowRun.workflow_id
-  })
-  core.info(`workflow path: ${workflow.path}`)
-  const path = workflow.path + ','
-  core.info(path.replace(/^\.github\/workflows\//, '').replaceAll(',', '-'))
-  console.log(workflow)
+  const oktokit = github.getOctokit(token)
 
   if (!primaryKey) {
     core.info(
@@ -33,22 +16,16 @@ export const cachePackages = async (cachePath: string) => {
     return
   }
 
-  if (core.getBooleanInput('skip-cache-save')) {
-    core.info('skip saving cache.')
-    return
-  }
-
-  if (primaryKey === state) {
+  const cacheHit = primaryKey === state
+  if (cacheHit) {
     core.info(
       `Cache hit occurred on the primary key ${primaryKey}, deleting cache.`
     )
-    await github
-      .getOctokit(core.getInput('github-token'))
-      .rest.actions.deleteActionsCacheByKey({
-        key: primaryKey,
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo
-      })
+    await oktokit.rest.actions.deleteActionsCacheByKey({
+      key: primaryKey,
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo
+    })
   }
 
   const cacheId = await cache.saveCache([cachePath], primaryKey)

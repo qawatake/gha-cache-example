@@ -19,7 +19,7 @@ jobs:
           cache-dependency-path: |
             go.mod
             Makefile
-          cache-save: ${{ github.ref == 'refs/heads/main' }}
+          cache-save: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Lint
         run: make lint
