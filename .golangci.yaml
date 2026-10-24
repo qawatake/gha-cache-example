@@ -1,15 +1,37 @@
 # referece: https://github.com/connectrpc/connect-go/blob/cd003a0d0733fc9a243c7e97732f863e11120abb/.golangci.yml
+# migrated to the v2 schema with `golangci-lint migrate`
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
-    - gomnd # Deprecated
-    - execinquery # Deprecated
-    - lll # don't want hard limits for line length
-    - nlreturn # generous whitespace violates house style
-    - wsl # generous whitespace violates house style
     - depguard # unnecessary for small libraries
-    - funlen # rely on code review to limit function length
-    - varnamelen
     - exhaustruct # for simplicity of examples
-    - gofumpt # prefer standard gofmt
-    - goimports # rely on gci instead
+    - funlen # rely on code review to limit function length
+    - gomodguard # deprecated since v2.12.0; gomodguard_v2 is enabled via `default: all`
+    - lll # don't want hard limits for line length
+    - mnd # formerly gomnd
+    - nlreturn # generous whitespace violates house style
+    - varnamelen
+    - wsl # generous whitespace violates house style
+    - wsl_v5 # successor of wsl (wsl is deprecated since v2.2.0)
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt # prefer standard gofmt over gofumpt; rely on gci instead of goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
