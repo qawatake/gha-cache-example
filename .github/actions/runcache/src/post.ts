@@ -13,7 +13,7 @@ process.on('uncaughtException', e => {
 // Added early exit to resolve issue with slow post action step:
 // - https://github.com/actions/setup-node/issues/878
 // https://github.com/actions/cache/pull/1217
-async function run(earlyExit?: boolean) {
+async function run(earlyExit?: boolean): Promise<void> {
   try {
     await cachePackages(core.getInput('path'), core.getInput('github-token'))
 

@@ -4,7 +4,10 @@ import * as cache from '@actions/cache'
 import * as github from '@actions/github'
 import { State } from './constants'
 
-export const cachePackages = async (cachePath: string, token: string) => {
+export const cachePackages = async (
+  cachePath: string,
+  token: string
+): Promise<void> => {
   const state = core.getState(State.CacheMatchedKey)
   const primaryKey = core.getState(State.CachePrimaryKey)
   const oktokit = github.getOctokit(token)

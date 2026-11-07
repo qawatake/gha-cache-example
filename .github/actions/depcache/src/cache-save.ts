@@ -3,7 +3,7 @@ import * as core from '@actions/core'
 import * as cache from '@actions/cache'
 import { State } from './constants'
 
-export const cachePackages = async (cachePath: string) => {
+export const cachePackages = async (cachePath: string): Promise<void> => {
   const state = core.getState(State.CacheMatchedKey)
   const primaryKey = core.getState(State.CachePrimaryKey)
 
