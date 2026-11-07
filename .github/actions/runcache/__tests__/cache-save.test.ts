@@ -20,7 +20,7 @@ jest.mock('@actions/github', () => ({
   getOctokit: jest.fn()
 }))
 
-const deleteActionsCacheByKey = jest.fn<() => Promise<unknown>>()
+const deleteActionsCacheByKey = jest.fn<(params: unknown) => Promise<unknown>>()
 
 const state = (primary: string, matched: string): void => {
   jest.mocked(core.getState).mockImplementation(name => {

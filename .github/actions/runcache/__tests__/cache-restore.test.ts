@@ -23,8 +23,8 @@ jest.mock('@actions/github', () => ({
   getOctokit: jest.fn()
 }))
 
-const getWorkflowRun = jest.fn<() => Promise<unknown>>()
-const getWorkflow = jest.fn<() => Promise<unknown>>()
+const getWorkflowRun = jest.fn<(params: unknown) => Promise<unknown>>()
+const getWorkflow = jest.fn<(params: unknown) => Promise<unknown>>()
 const pathHash = crypto.createHash('md5').update('/cache').digest('hex')
 
 describe('restoreCache', () => {
