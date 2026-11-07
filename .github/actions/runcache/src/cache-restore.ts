@@ -10,7 +10,7 @@ export const restoreCache = async (
   jobId: string,
   cachePath: string,
   token: string
-) => {
+): Promise<void> => {
   const oktokit = github.getOctokit(token)
   const { data: workflowRun } = await oktokit.rest.actions.getWorkflowRun({
     repo: github.context.repo.repo,

@@ -11,7 +11,7 @@ export const restoreCache = async (
   dependencyPath: string,
   cachePath: string,
   token: string
-) => {
+): Promise<void> => {
   const fileHash = await glob.hashFiles(dependencyPath)
 
   if (!fileHash) {
