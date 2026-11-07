@@ -1,0 +1,38 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+name: ts-actions
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        action:
+          - depcache
+          - runcache
+    defaults:
+      run:
+        working-directory: .github/actions/${{ matrix.action }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .github/actions/${{ matrix.action }}/.node-version
+      - run: npm ci --ignore-scripts
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run ci-test
+      # dist/ is committed and is what `uses: ./.github/actions/...` runs.
+      # Rebuild it and fail if it differs from the committed copy.
+      - run: npm run package
+      - name: Check dist is up to date
+        run: |
+          git add -A dist
+          git diff --cached --exit-code --stat -- dist
